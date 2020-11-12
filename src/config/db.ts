@@ -1,0 +1,1 @@
+export const CONNECTIONSTRING = process.env.CONNECTIONSTRING;
