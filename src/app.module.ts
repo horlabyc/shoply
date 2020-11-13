@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CONNECTIONSTRING } from './config/db';
+import { LoggingInterceptor } from './core/logging.interceptor';
 import { ItemsModule } from './Items/items.module';
 
 @Module({
@@ -15,6 +17,11 @@ import { ItemsModule } from './Items/items.module';
     ItemsModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR, useClass: LoggingInterceptor
+    }
+  ],
 })
 export class AppModule {}
