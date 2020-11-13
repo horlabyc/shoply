@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Post } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ItemDTO, ItemListResponse } from './item';
 import { ItemsService } from './items.service';
@@ -12,8 +12,8 @@ export class ItemsController {
   }
 
   @Get()
-  getAllItems(): Observable<ItemListResponse>{
-    return this.itemsService.findAll();
+  getAllItems(){
+    return new ForbiddenException()
   }
 
   @Post()
