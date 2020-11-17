@@ -78,7 +78,7 @@ export class ItemsService {
     if(data.unitPrice){
       toUpdate['unitPrice'] = data.unitPrice;
     }
-    const Item = await this.itemModel.findOneAndUpdate( {_id: itemId}, { $set : toUpdate }, {new: true}).exec();
+    const Item = await this.itemModel.findByIdAndUpdate( {_id: itemId}, { $set : toUpdate }, {new: true}).exec();
     if(!Item) {
       throw new HttpException({
         message: 'ITEM NOT FOUND',
