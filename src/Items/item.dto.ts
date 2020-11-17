@@ -6,19 +6,16 @@ export class ItemDTO {
   name: string;
 
   @IsNotEmpty()
-  category: Category
+  category: string
   
-  @IsNotEmpty()
   @IsString()
-  description: string;
+  @IsNotEmpty()
+  unitMeasure: string;
 
+  description: string;
   extraNote: string;
   image: string;
   unitPrice: number;
   quantity: number;
-
-  @IsString()
-  @IsNotEmpty()
-  unitMeasure: string;
   isAcquired: boolean
 }

@@ -17,7 +17,7 @@ export class CategoryService {
     return this.formatSuccessResponse(categories);
   }
 
-  async create(data: CategoryDTO) {
+  async create(data: CategoryDTO): Promise<Category> {
     const newCategory = new this.categoryModel(data);
     return newCategory.save();
   }
