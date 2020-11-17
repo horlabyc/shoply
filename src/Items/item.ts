@@ -12,19 +12,6 @@ export interface ItemListResponse {
   }
 }
 
-export interface ItemDTO {
-  name: string;
-  category: Category
-  user: any;
-  description: string;
-  extraNote?: string;
-  image?: string;
-  unitPrice: number;
-  quantity: number;
-  unitMeasure: string;
-  isAcquired: boolean
-}
-
 export interface Category {
   name: string;
   createdAt: Date;

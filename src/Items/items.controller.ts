@@ -1,6 +1,8 @@
-import { Body, Controller, ForbiddenException, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UsePipes } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { ItemDTO, ItemListResponse } from './item';
+import { CustomValidationPipe } from 'src/core/validation.pipe';
+import { ItemListResponse } from './item';
+import { ItemDTO } from './item.dto';
 import { ItemsService } from './items.service';
 
 @Controller('items')
@@ -12,12 +14,13 @@ export class ItemsController {
   }
 
   @Get()
-  getAllItems(){
-    return new ForbiddenException()
+  getAllItems(): Observable<ItemListResponse>{
+    return this.itemsService.findAll();
   }
 
-  @Post()
+  @Post('/create')
+  @UsePipes(new CustomValidationPipe())
   createItem(@Body() data: ItemDTO) {
-
+    return data;
   }
 }
