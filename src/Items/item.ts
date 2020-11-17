@@ -11,8 +11,3 @@ export interface ItemListResponse {
     items: Item[];
   }
 }
-
-export interface Category {
-  name: string;
-  createdAt: Date;
-}

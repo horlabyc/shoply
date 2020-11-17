@@ -1,5 +1,5 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator'
-import { Category } from './item';
+import { IsNotEmpty, IsString } from 'class-validator'
+import { Category } from 'src/schemas/category.schema';
 
 export class ItemDTO {
   @IsNotEmpty()

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
-import { ItemCategory } from './itemCategory.scheme';
+import { Category, CategorySchema } from './category.schema';
 import { User, UserSchema } from './user.schema';
 
 export type ItemDocument = Item & Document
@@ -11,7 +11,7 @@ export class Item {
   name: String
   
   @Prop({required: true})
-  category: ItemCategory
+  category: Category
 
   @Prop({ type: Types.ObjectId })
   user: User

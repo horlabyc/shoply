@@ -4,6 +4,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CategoryModule } from './category/category.module';
 import { AllExceptionFilter } from './core/exception.filter';
 import { LoggingInterceptor } from './core/logging.interceptor';
 import { ItemsModule } from './Items/items.module';
@@ -14,7 +15,8 @@ import { ItemsModule } from './Items/items.module';
       isGlobal: true
     }),
     MongooseModule.forRoot(process.env.CONNECTIONSTRING, { useNewUrlParser: true }),
-    ItemsModule
+    ItemsModule,
+    CategoryModule
   ],
   controllers: [AppController],
   providers: [
