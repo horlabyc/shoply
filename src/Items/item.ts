@@ -4,7 +4,7 @@ export interface ItemListResponse {
   success?: boolean;
   statusCode?: number;
   data?: {
-    page?: number;
+    currentPage?: number;
     totalPages?: number;
     total: number;
     limit: number;

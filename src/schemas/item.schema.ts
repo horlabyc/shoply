@@ -36,6 +36,8 @@ export class Item {
 
   @Prop({default: false})
   isAcquired: Boolean
+
+  versionKey: false
 }
 
 export const ItemSchema = SchemaFactory.createForClass(Item);
