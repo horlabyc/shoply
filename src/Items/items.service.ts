@@ -17,35 +17,38 @@ export class ItemsService {
   )
   {}
 
-  findAll(): Observable<ItemListResponse> {
-    return from(this.itemModel.find().exec()).pipe(
-      map((res) => {
-        return {
-          success: true,
-          statusCode: HttpStatus.OK,
-          data: {
-            page: 1,
-            total: 100,
-            totalPages: 2,
-            limit: 5,
-            items: res
-          }
-        }
-      })
-    )
+  async findAll(page = 1, limit = 15): Promise<ItemListResponse> {
+    console.log({limit})
+    const total = await this.itemModel.countDocuments();
+    const items = await this.itemModel.find()
+    .skip((limit * page) - limit)
+    .limit(limit).exec();
+    return {
+      success: true,
+      statusCode: HttpStatus.OK,
+      data: {
+        currentPage: page,
+        totalPages: Math.ceil(total/limit),
+        total,
+        limit,
+        items,
+      }
+    }
   }
 
-  async createItem(data: ItemDTO): Promise<Item> {
+  async createItem(data: ItemDTO): Promise<any> {
     const category = await this.categoryModel.findOne({ name: data.category}).exec();
+    const item = await this.itemModel.findOne({ name: data.name}).exec();
+    if(item) {
+      throw new HttpException('Item with the same name already exists', HttpStatus.BAD_REQUEST)
+    }
     if(!category){
       await new this.categoryModel({
         name: data.category
       }).save();
-      return new this.itemModel(data).save();
+      return await new this.itemModel(data).save();
     } else {
-      throw new HttpException({
-        errorMessage: 'Category already exists',
-      }, HttpStatus.BAD_REQUEST)
+      return await new this.itemModel(data).save();
     }
   }
 

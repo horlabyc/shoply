@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { CustomValidationPipe } from 'src/core/validation.pipe';
 import { Item } from 'src/schemas/item.schema';
@@ -13,8 +13,8 @@ export class ItemsController {
   ){}
 
   @Get('items')
-  getAllItems(): Observable<ItemListResponse>{
-    return this.itemsService.findAll();
+  getAllItems(@Query('page') page: number, @Query('limit') limit: number): Promise<any>{
+    return this.itemsService.findAll(+page, +limit);
   }
 
   @Post('item/new')
