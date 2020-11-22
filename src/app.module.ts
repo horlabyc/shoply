@@ -8,6 +8,7 @@ import { CategoryModule } from './category/category.module';
 import { AllExceptionFilter } from './core/exception.filter';
 import { LoggingInterceptor } from './core/logging.interceptor';
 import { ItemsModule } from './Items/items.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { ItemsModule } from './Items/items.module';
     }),
     MongooseModule.forRoot(process.env.CONNECTIONSTRING, { useNewUrlParser: true }),
     ItemsModule,
-    CategoryModule
+    CategoryModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [
