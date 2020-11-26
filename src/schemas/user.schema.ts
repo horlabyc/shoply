@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {Document} from 'mongoose';
 import * as  bcrypt from 'bcryptjs';
-import { nextTick } from 'process';
 export type UserDocument = User & Document
 
 @Schema({ versionKey: false })

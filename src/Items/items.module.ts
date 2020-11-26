@@ -10,8 +10,7 @@ import { ItemsService } from './items.service';
     MongooseModule.forFeature([
       { name: Item.name, schema: ItemSchema},
       { name: Category.name, schema: CategorySchema}
-  ]),
-    ItemsModule
+  ])
   ],
   controllers: [ItemsController],
   providers: [ItemsService]

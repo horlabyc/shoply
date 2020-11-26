@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UseGuards, UsePipes } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { CustomValidationPipe } from 'src/core/validation.pipe';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { Item } from 'src/schemas/item.schema';
 import { ItemListResponse } from './item';
 import { ItemDTO } from './item.dto';
@@ -13,6 +14,7 @@ export class ItemsController {
   ){}
 
   @Get('items')
+  @UseGuards(new AuthGuard())
   getAllItems(@Query('page') page: number, @Query('limit') limit: number): Promise<any>{
     return this.itemsService.findAll(+page, +limit);
   }

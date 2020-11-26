@@ -7,4 +7,6 @@ export class LoginDTO {
   @IsNotEmpty()
   email: string
 
+  userId: string
+  username: string
 }

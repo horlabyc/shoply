@@ -5,7 +5,7 @@ import { User } from './user.schema';
 
 export type ItemDocument = Item & Document
 
-@Schema()
+@Schema({ versionKey: false })
 export class Item {
   @Prop({required: true})
   name: string

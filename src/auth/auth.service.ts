@@ -6,13 +6,29 @@ import { LoginDTO } from './login.dto';
 import { RegisterDTO } from './register.dto';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>
-  ){
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private jwtService: JwtService
+  ){}
 
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.userModel.findOne({email}).exec();
+    const isPasswordValid = await this.comparePassword(pass, user.password);
+    if(user) {
+      const { username, email, token, _id} = user;
+      return { 
+        user : isPasswordValid ? {
+          userId: _id, username, email, token
+        } : null,
+        isPasswordValid
+      };
+    }
+    return null;
   }
+
   async createAccount(payload: RegisterDTO): Promise<any> {
     const existingUser = await this.userModel.findOne({ $or: [{username: payload.username}, { email: payload.email}]});
     if(existingUser){
@@ -27,17 +43,22 @@ export class AuthService {
     return this.formatSuccessResponse({_id: user._id, email: user.email, username: user.username})
   }
 
-  async login(payload: LoginDTO): Promise<any> {
-    const existingUser = await this.userModel.findOne({ email: payload.email});
-    if(!existingUser){
-      throw new HttpException('User with the provided email does not exist', HttpStatus.BAD_REQUEST);
-    }
-    if(!await this.comparePassword(payload.password, existingUser.password)){
-      throw new HttpException('Invalid email/password combination', HttpStatus.BAD_REQUEST);
-    }
-    existingUser.token = await this.generateToken(existingUser);
-    const user = await existingUser.save();
-    return this.formatSuccessResponse({_id: user._id, email: user.email, username: user.username, token: user.token}, 'Login successful')
+  async login(user: LoginDTO): Promise<any> {
+    const payload = { email: user.email, sub: user.userId};
+    return {
+      username: user.username,
+      accessToken: this.jwtService.sign(payload),
+    };
+    // const existingUser = await this.userModel.findOne({ email: payload.email});
+    // if(!existingUser){
+    //   throw new HttpException('User with the provided email does not exist', HttpStatus.BAD_REQUEST);
+    // }
+    // if(!await this.comparePassword(payload.password, existingUser.password)){
+    //   throw new HttpException('Invalid email/password combination', HttpStatus.BAD_REQUEST);
+    // }
+    // existingUser.token = await this.generateToken(existingUser);
+    // const user = await existingUser.save();
+    // return this.formatSuccessResponse({_id: user._id, email: user.email, username: user.username, token: user.token}, 'Login successful')
   }
 
   async comparePassword(attempt, userPassword) {
