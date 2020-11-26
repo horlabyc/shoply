@@ -3,7 +3,7 @@ import { IsNotEmpty } from "class-validator";
 
 export class CategoryDTO {
   @IsNotEmpty()
-  name: String
+  name: string
 
   createdAt: Date;
 }
