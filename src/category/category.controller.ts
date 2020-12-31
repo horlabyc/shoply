@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Post, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, UsePipes, Request } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CustomValidationPipe } from 'src/core/validation.pipe';
 import { CategoryDTO } from './category.dto';
 import { CategoryService } from './category.service';
 
-@Controller('category')
+@Controller('categories')
 @UseGuards(JwtAuthGuard)
 export class CategoryController {
 
@@ -15,13 +15,13 @@ export class CategoryController {
   }
   
   @Get()
-  getAllCatgories(){
-    return this.categoryService.findAll()
+  getAllCatgories(@Request() req){
+    return this.categoryService.findAll(req.user.userId)
   }
 
-  @Post('/new')
+  @Post()
   @UsePipes(new CustomValidationPipe())
-  create(@Body() data: CategoryDTO){
-    return this.categoryService.create(data);
+  create(@Body() data: CategoryDTO, @Request() req){
+    return this.categoryService.create(req.user.userId, data);
   }
 }

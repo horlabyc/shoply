@@ -10,6 +10,9 @@ export class Category {
   
   @Prop({default: new Date(Date.now())})
   createdAt: Date
+
+  @Prop({required: true})
+  user: string
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);
