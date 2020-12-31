@@ -16,8 +16,8 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.userModel.findOne({email}).exec();
-    const isPasswordValid = await this.comparePassword(pass, user.password);
     if(user) {
+      const isPasswordValid = await this.comparePassword(pass, user.password);
       const { username, email, token, _id} = user;
       return { 
         user : isPasswordValid ? {
@@ -26,7 +26,7 @@ export class AuthService {
         isPasswordValid
       };
     }
-    return null;
+    return {user: null};
   }
 
   async createAccount(payload: RegisterDTO): Promise<any> {

@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
     this.ValidateToken(request.headers.authorization).then((decode) => {
       decodeToken = decode;
       return true;
-    }).catch(() => {
+    }).catch((error) => {
       return false
     });
   }
