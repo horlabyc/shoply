@@ -8,6 +8,9 @@ export interface ItemListResponse {
     totalPages?: number;
     total: number;
     limit: number;
-    items: Item[];
+    items: {
+      category: string;
+      items: Item[]
+    }[];
   }
 }

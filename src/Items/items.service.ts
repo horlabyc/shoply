@@ -6,6 +6,7 @@ import { from } from 'rxjs/internal/observable/from';
 import { map } from 'rxjs/operators'
 import { Category, CategoryDocument } from 'src/schemas/category.schema';
 import { Item, ItemDocument } from 'src/schemas/item.schema';
+import { formatItemResponse } from 'src/utility/item';
 import { ItemListResponse } from './item';
 import { ItemDTO } from './item.dto';
 
@@ -17,34 +18,62 @@ export class ItemsService {
   )
   {}
 
-  async findAll(page = 1, limit = 15): Promise<ItemListResponse> {
-    console.log({limit})
-    const total = await this.itemModel.countDocuments();
-    const items = await this.itemModel.find()
-    .skip((limit * page) - limit)
-    .limit(limit).exec();
-    return {
-      success: true,
-      statusCode: HttpStatus.OK,
-      data: {
-        currentPage: page,
-        totalPages: Math.ceil(total/limit),
-        total,
-        limit,
-        items,
-      }
+  async findAll(userId, page, limit): Promise<ItemListResponse> {
+    let total;
+    limit = limit? parseInt(limit) : 15;
+    if(page){
+      page = page < 1 ? 0 : (parseInt(page) - 1) * limit;
+    } else {
+        page = 0;
     }
+
+    const match = {user: userId}
+    return new Promise((resolve, reject) => {
+      this.itemModel.aggregate([
+        {$match: match},
+        {$group: {_id: '_id', total: {$sum: 1}}}
+      ], async (err, doc) => {
+        if(err) return reject(err);
+        total = doc.length > 0? doc[0].total : 0;
+        const totalPages = Math.ceil(total/limit);
+        const response = {
+          success: true,
+          statusCode: HttpStatus.OK,
+          data: {
+            currentPage: Math.round(page / limit) + 1,
+            totalPages,
+            total,
+            limit,
+            items: await formatItemResponse([])
+          }
+        }
+        if(total < 1){
+          return resolve(response)
+        }
+        this.itemModel.aggregate([
+          {$match: match},
+          {$skip: page},
+          {$limit: limit},
+        ], async (err, docs) => {
+          if(err) return reject(err);
+          response.data.items = await formatItemResponse(docs);
+          return resolve(response);
+        })
+      })
+    })
   }
 
-  async createItem(data: ItemDTO): Promise<any> {
-    const category = await this.categoryModel.findOne({ name: data.category}).exec();
+  async createItem(userId, data: ItemDTO): Promise<any> {
+    const category = await this.categoryModel.findOne({ name: data.category.toUpperCase()}).exec();
     const item = await this.itemModel.findOne({ name: data.name}).exec();
     if(item) {
       throw new HttpException('Item with the same name already exists', HttpStatus.BAD_REQUEST)
     }
+    data['user'] = userId;
     if(!category){
       await new this.categoryModel({
-        name: data.category
+        name: data.category.toUpperCase(),
+        user: userId
       }).save();
       return await new this.itemModel(data).save();
     } else {
@@ -52,7 +81,12 @@ export class ItemsService {
     }
   }
 
-  async updateItem(itemId: string, data: Partial<ItemDTO>){
+  async getItem(userId, itemId) {
+    const item = await this.itemModel.findOne({user: userId, _id: itemId}).exec();
+    return item;
+  }
+
+  async updateItem(userId, itemId: string, data: Partial<ItemDTO>){
     let toUpdate = {};
     if(data.category){
       toUpdate['category'] = data.category
@@ -78,16 +112,13 @@ export class ItemsService {
     if(data.unitMeasure){
       toUpdate['unitMeasure'] = data.unitMeasure;
     }
-    if(data.unitPrice){
-      toUpdate['unitPrice'] = data.unitPrice;
-    }
-    const Item = await this.itemModel.findByIdAndUpdate( {_id: itemId}, { $set : toUpdate }, {new: true}).exec();
+    const Item = await this.itemModel.findByIdAndUpdate( {_id: itemId, user: userId}, { $set : toUpdate }, {new: true}).exec();
     if(!Item) {
       throw new HttpException({
         message: 'ITEM NOT FOUND',
       }, HttpStatus.NOT_FOUND)
     }
-    return this.formatSuccessResponse(Item);
+    return Item;
   }
 
   formatSuccessResponse(res){

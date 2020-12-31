@@ -11,10 +11,10 @@ export class Item {
   name: string
   
   @Prop({required: true})
-  category: Category
+  category: string
 
   @Prop({ type: Types.ObjectId })
-  user: User
+  user: string
 
   @Prop()
   description: string
@@ -31,7 +31,7 @@ export class Item {
   @Prop({default: 1})
   quantity: number
 
-  @Prop()
+  @Prop({default: 'pcs'})
   unitMeasure: string
 
   @Prop({default: false})
