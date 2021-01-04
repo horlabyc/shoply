@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards, UsePipes, Request } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UseGuards, UsePipes, Request, Delete } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CustomValidationPipe } from 'src/core/validation.pipe';
 import { Item } from 'src/schemas/item.schema';
@@ -35,5 +35,11 @@ export class ItemsController {
   async updateItem(@Request() req, @Param('id') itemId: string, @Body() data: Partial<ItemDTO>) {
     const updatedItem = await this.itemsService.updateItem(req.user.userId, itemId, data)
     return sendSuccessResponse('Item updated successfully', updatedItem);
+  }
+
+  @Delete('/:id')
+  async deleteItem(@Request() req, @Param('id') itemId: string) {
+    const deletedItem = await this.itemsService.deleteItem(req.user.userId, itemId);
+    return sendSuccessResponse('Item deleted successfully', deletedItem);
   }
 }

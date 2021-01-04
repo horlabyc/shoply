@@ -121,6 +121,17 @@ export class ItemsService {
     return Item;
   }
 
+  async deleteItem(userId, itemId: string) {
+    const item = await this.itemModel.findOne({user: userId, _id: itemId}).exec();
+    if(!item){
+      throw new HttpException({
+        message: 'ITEM NOT FOUND',
+      }, HttpStatus.NOT_FOUND)
+    }
+    await this.itemModel.deleteOne({_id: item._id});
+    return item;
+  } 
+
   formatSuccessResponse(res){
     return {
       message: 'ITEM UPDATED SUCCESSFULLY',
