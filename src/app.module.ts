@@ -9,6 +9,7 @@ import { HttpExceptionFilter } from './core/exception.filter';
 import { LoggingInterceptor } from './core/logging.interceptor';
 import { ItemsModule } from './Items/items.module';
 import { AuthModule } from './auth/auth.module';
+import { ShoppingListModule } from './shopping-list/shopping-list.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { AuthModule } from './auth/auth.module';
     MongooseModule.forRoot(process.env.CONNECTIONSTRING, { useNewUrlParser: true }),
     ItemsModule,
     CategoryModule,
-    AuthModule
+    AuthModule,
+    ShoppingListModule
   ],
   controllers: [AppController],
   providers: [
