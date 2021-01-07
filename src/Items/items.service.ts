@@ -87,7 +87,7 @@ export class ItemsService {
   }
 
   async updateItem(userId, itemId: string, data: Partial<ItemDTO>){
-    let toUpdate = {};
+    const toUpdate = {};
     if(data.category){
       toUpdate['category'] = data.category
     }

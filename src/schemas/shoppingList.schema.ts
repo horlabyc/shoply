@@ -18,7 +18,7 @@ export class ShoppingList {
   @Prop({required: true})
   name: string
 
-  @Prop()
+  @Prop({default: []})
   items: Item
 
   @Prop({default: 'pending'})
