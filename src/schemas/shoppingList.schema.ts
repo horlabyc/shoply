@@ -19,7 +19,7 @@ export class ShoppingList {
   name: string
 
   @Prop({default: []})
-  items: Item
+  items: [Item]
 
   @Prop({default: 'pending'})
   status: 'pending' | 'completed' | 'cancelled'

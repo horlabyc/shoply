@@ -1,12 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Item, ItemDocument } from 'src/schemas/item.schema';
 import { ShoppingList, ShoppingListDocument } from 'src/schemas/shoppingList.schema';
 
 @Injectable()
 export class ShoppingListService {
   constructor(
-    @InjectModel(ShoppingList.name) private shoppingModel: Model<ShoppingListDocument>
+    @InjectModel(ShoppingList.name) private shoppingModel: Model<ShoppingListDocument>,
+    @InjectModel(Item.name) private itemModel: Model<ItemDocument>
   ){
 
   }
@@ -37,5 +39,29 @@ export class ShoppingListService {
       }, HttpStatus.NOT_FOUND)
     }
     return shoppingList;
+  }
+
+  async addItem(userId, shoppingListId, payload: {itemId: string}) {
+    const shoppingList = await this.shoppingModel.findOne({_id: shoppingListId, user: userId});
+    if(!shoppingList){
+      throw new HttpException({
+        message: 'Shopping List Not found',
+      }, HttpStatus.NOT_FOUND)
+    }
+    const item = await this.itemModel.findOne({_id: payload.itemId, user: userId});
+    if(!item){
+      throw new HttpException({
+        message: 'Item not found on user\'s account',
+      }, HttpStatus.NOT_FOUND)
+    }
+    const itemIndex = shoppingList.items.findIndex((item) => item['_id'] == payload.itemId);
+    if(itemIndex > -1){
+      throw new HttpException({
+        message: 'Item already exist on the list',
+      }, HttpStatus.BAD_REQUEST)
+    }
+    shoppingList.items.push(item);
+    shoppingList.updatedAt = new Date(Date.now());
+    return await shoppingList.save();  
   }
 }

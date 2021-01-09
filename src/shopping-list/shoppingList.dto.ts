@@ -9,3 +9,9 @@ export class ShoppingListDto {
   @IsString()
   user
 }
+
+export class AddItemToListDto {
+  @IsNotEmpty()
+  @IsString()
+  itemId
+}
