@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Item, ItemDocument } from 'src/schemas/item.schema';
 import { ShoppingList, ShoppingListDocument } from 'src/schemas/shoppingList.schema';
+import { formatItemResponse } from 'src/utility/item';
 
 @Injectable()
 export class ShoppingListService {
@@ -14,7 +15,11 @@ export class ShoppingListService {
   }
 
   async findAll(userId) {
-    return await this.shoppingModel.find({user: userId})
+    const lists = await this.shoppingModel.find({user: userId});
+    lists.forEach(async(list:any) => {
+      list.items = await formatItemResponse(list.items);
+    })
+    return lists;
   }
 
   async createNewShoppingList(userId, payload) {
