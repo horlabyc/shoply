@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Request, Get, Post, HttpException, HttpStatus, Body, Put, Param, UsePipes } from '@nestjs/common';
+import { Controller, UseGuards, Request, Get, Post, HttpException, HttpStatus, Body, Put, Param, UsePipes, Delete } from '@nestjs/common';
 import { from, Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -46,6 +46,19 @@ export class ShoppingListController {
     return from(this.shoppingListService.addItem(req.user.userId, shoppingListId, payload)).pipe(
       map((data) => {
         return sendSuccessResponse('Shopping list updated successfully', data)
+      }),
+      catchError((error) => {
+        return throwError(new HttpException(error, HttpStatus.BAD_REQUEST))
+      })
+    )
+  }
+
+  @Delete('/:id/:itemId/delete')
+  @UsePipes(new CustomValidationPipe())
+  deleteItemFromList(@Request() req, @Param('id') shoppingListId: string, @Param('itemId') itemId: string){
+    return from(this.shoppingListService.deleteItem(req.user.userId, shoppingListId, itemId)).pipe(
+      map((data) => {
+        return sendSuccessResponse('Shopping list item deleted', data);
       }),
       catchError((error) => {
         return throwError(new HttpException(error, HttpStatus.BAD_REQUEST))

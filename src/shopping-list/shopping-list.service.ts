@@ -69,4 +69,22 @@ export class ShoppingListService {
     shoppingList.updatedAt = new Date(Date.now());
     return await shoppingList.save();  
   }
+
+  async deleteItem(userId, shoppingListId, itemId) {
+    const shoppingList = await this.shoppingModel.findOne({_id: shoppingListId, user: userId});
+    if(!shoppingList){
+      throw new HttpException({
+        message: 'Shopping List Not found',
+      }, HttpStatus.NOT_FOUND)
+    }
+    const itemIndex = shoppingList.items.findIndex((item) => `${item['_id']}` === `${itemId}`);
+    if(itemIndex < 0){
+      throw new HttpException({
+        message: 'Shopping List Item Not found',
+      }, HttpStatus.NOT_FOUND)
+    }
+    shoppingList.items[itemIndex].isDeleted = true;
+    await shoppingList.save();
+    return shoppingList.items[itemIndex]
+  }
 }

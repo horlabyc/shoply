@@ -37,6 +37,9 @@ export class Item {
   @Prop({default: false})
   isAcquired: boolean
 
+  @Prop({default: false})
+  isDeleted: boolean
+
   versionKey: false
 }
 
