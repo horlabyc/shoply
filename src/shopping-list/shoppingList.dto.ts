@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator'
 
 export class ShoppingListDto {
   @IsNotEmpty()
@@ -14,4 +14,11 @@ export class AddItemToListDto {
   @IsNotEmpty()
   @IsString()
   itemId
+}
+
+export class UpdateItemQuantityDto {
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  quantity
 }

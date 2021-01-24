@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Item, ItemDocument } from 'src/schemas/item.schema';
 import { ShoppingList, ShoppingListDocument } from 'src/schemas/shoppingList.schema';
 import { formatItemResponse } from 'src/utility/item';
+import { UpdateItemQuantityDto } from './shoppingList.dto';
 
 @Injectable()
 export class ShoppingListService {
@@ -70,7 +71,7 @@ export class ShoppingListService {
     return await shoppingList.save();  
   }
 
-  async deleteItem(userId, shoppingListId, itemId) {
+  async updateItemQuantity(userId, shoppingListId, itemId, payload: UpdateItemQuantityDto) {
     const shoppingList = await this.shoppingModel.findOne({_id: shoppingListId, user: userId});
     if(!shoppingList){
       throw new HttpException({
@@ -83,8 +84,32 @@ export class ShoppingListService {
         message: 'Shopping List Item Not found',
       }, HttpStatus.NOT_FOUND)
     }
-    shoppingList.items[itemIndex].isDeleted = true;
+    if(shoppingList.items[itemIndex].isDeleted){
+      throw new HttpException({
+        message: 'Item has been deleted from list',
+      }, HttpStatus.BAD_REQUEST)
+    }
+    shoppingList.items[itemIndex].quantity = payload.quantity;
+    shoppingList.markModified('items');
     await shoppingList.save();
     return shoppingList.items[itemIndex]
+  }
+
+  async deleteItem(userId, shoppingListId, itemId) {
+    const shoppingList = await this.shoppingModel.findOne({_id: shoppingListId, user: userId}).exec();
+    if(!shoppingList){
+      throw new HttpException({
+        message: 'Shopping List Not found',
+      }, HttpStatus.NOT_FOUND)
+    }
+    const itemIndex = shoppingList.items.findIndex((item) => `${item['_id']}` === `${itemId}`);
+    if(itemIndex < 0){
+      throw new HttpException({
+        message: 'Shopping List Item Not found',
+      }, HttpStatus.NOT_FOUND)
+    }
+    shoppingList.items[itemIndex].isDeleted = true;
+    shoppingList.markModified('items');
+    return shoppingList.items[itemIndex];
   }
 }
