@@ -41,7 +41,7 @@ export class ShoppingListService {
     const shoppingList = this.shoppingModel.findByIdAndUpdate({_id: shoppingListId, user: userId}, { $set: toUpdate}, { new: true}).exec();
     if(!shoppingList) {
       throw new HttpException({
-        message: 'ITEM NOT FOUND',
+        message: 'SHOPPING-LIST NOT FOUND',
       }, HttpStatus.NOT_FOUND)
     }
     return shoppingList;
@@ -124,5 +124,34 @@ export class ShoppingListService {
     shoppingList.markModified('items');
     await shoppingList.save();
     return shoppingList.items[itemIndex];
+  }
+
+  async cancelShoppingList(userId, shoppingListId){
+    const shoppingList = await this.shoppingModel.findOne({_id: shoppingListId, user: userId});
+    if(!shoppingList){
+      throw new HttpException({
+        message: 'Shopping List Not found',
+      }, HttpStatus.NOT_FOUND)
+    }
+    shoppingList.status = 'cancelled';
+    shoppingList.statusUpdateDate = new Date(Date.now());
+    return await shoppingList.save();
+  }
+
+  async completeShoppingList(userId, shoppingListId){
+    const shoppingList = await this.shoppingModel.findOne({_id: shoppingListId, user: userId});
+    if(!shoppingList){
+      throw new HttpException({
+        message: 'Shopping List Not found',
+      }, HttpStatus.NOT_FOUND)
+    }
+    if(shoppingList.status === 'cancelled'){
+      throw new HttpException({
+        message: 'Shopping List is cancelled',
+      }, HttpStatus.NOT_FOUND)
+    }
+    shoppingList.status = 'completed';
+    shoppingList.statusUpdateDate = new Date(Date.now());
+    return await shoppingList.save();
   }
 }

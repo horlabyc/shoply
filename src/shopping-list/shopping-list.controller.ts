@@ -90,4 +90,30 @@ export class ShoppingListController {
       })
     )
   }
+
+  @Put('/:id/complete')
+  @UsePipes(new CustomValidationPipe())
+  cancelShoppingList(@Request() req, @Param('id') shoppingListId: string){
+    return from(this.shoppingListService.completeShoppingList(req.user.userId, shoppingListId)).pipe(
+      map((data) => {
+        return sendSuccessResponse('Shopping list completed', data)
+      }),
+      catchError((error) => {
+        return throwError(new HttpException(error, HttpStatus.BAD_REQUEST))
+      })
+    )
+  }
+
+  @Put('/:id/cancel')
+  @UsePipes(new CustomValidationPipe())
+  completeShoppingList(@Request() req, @Param('id') shoppingListId: string){
+    return from(this.shoppingListService.cancelShoppingList(req.user.userId, shoppingListId)).pipe(
+      map((data) => {
+        return sendSuccessResponse('Shopping list cancelled', data)
+      }),
+      catchError((error) => {
+        return throwError(new HttpException(error, HttpStatus.BAD_REQUEST))
+      })
+    )
+  }
 }
