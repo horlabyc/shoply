@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Item } from './item.schema';
 import {Document} from 'mongoose';
+import { ShoppingListItem } from './shopping-list-item.schema';
 
 export type ShoppingListDocument = ShoppingList & Document;
 
@@ -19,7 +20,7 @@ export class ShoppingList {
   name: string
 
   @Prop({default: []})
-  items: [Item]
+  items: [ShoppingListItem]
 
   @Prop({default: 'pending'})
   status: 'pending' | 'completed' | 'cancelled'

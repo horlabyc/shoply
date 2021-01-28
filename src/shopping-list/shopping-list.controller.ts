@@ -45,7 +45,7 @@ export class ShoppingListController {
   updateItemQuantity(@Request() req, @Param('id') shoppingListId: string, @Param('itemId') itemId: string, @Body() payload: UpdateItemQuantityDto): Observable<SuccessResponse>{
     return from(this.shoppingListService.updateItemQuantity(req.user.userId, shoppingListId, itemId, payload)).pipe(
       map((data) => {
-        return sendSuccessResponse('Shopping list created successfully', data)
+        return sendSuccessResponse('Shopping list item quantity updated successfully', data)
       }),
       catchError((error) => {
         return throwError(new HttpException(error, HttpStatus.BAD_REQUEST))

@@ -4,10 +4,6 @@ export class ShoppingListDto {
   @IsNotEmpty()
   @IsString()
   name
-
-  @IsNotEmpty()
-  @IsString()
-  user
 }
 
 export class AddItemToListDto {

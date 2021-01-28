@@ -1,12 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
-import { Category } from './category.schema';
-import { User } from './user.schema';
 
-export type ItemDocument = Item & Document
+export type ItemDocument = ShoppingListItem & Document
 
 @Schema({ versionKey: false })
-export class Item {
+export class ShoppingListItem {
+  @Prop({require: true})
+  _id: string
+  
   @Prop({required: true})
   name: string
   
@@ -22,16 +23,17 @@ export class Item {
   @Prop()
   extraNote: string
 
-  @Prop()
-  image: string
-
-  @Prop()
-  unitPrice: number
+  @Prop({default: 1})
+  quantity: number
 
   @Prop({default: 'pcs'})
   unitMeasure: string
 
-  versionKey: false
+  @Prop({default: false})
+  isAcquired: boolean
+
+  @Prop({default: false})
+  isDeleted: boolean
 }
 
-export const ItemSchema = SchemaFactory.createForClass(Item);
+export const ShoppingListItemSchema = SchemaFactory.createForClass(ShoppingListItem);

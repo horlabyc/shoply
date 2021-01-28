@@ -16,7 +16,7 @@ export class ShoppingListService {
   }
 
   async findAll(userId) {
-    const lists = await this.shoppingModel.find({user: userId});
+    const lists = await this.shoppingModel.find({user: userId}).exec();
     lists.forEach(async(list:any) => {
       list.items = await formatItemResponse(list.items);
     })
@@ -66,7 +66,19 @@ export class ShoppingListService {
         message: 'Item already exist on the list',
       }, HttpStatus.BAD_REQUEST)
     }
-    shoppingList.items.push(item);
+    const { name, category, description, extraNote, user, unitMeasure, _id} = item;
+    shoppingList.items.push({
+      name,
+      category,
+      description,
+      user,
+      extraNote,
+      quantity: 1,
+      unitMeasure,
+      isAcquired: false,
+      isDeleted: false,
+      _id
+    });
     shoppingList.updatedAt = new Date(Date.now());
     return await shoppingList.save();  
   }
@@ -110,6 +122,7 @@ export class ShoppingListService {
     }
     shoppingList.items[itemIndex].isDeleted = true;
     shoppingList.markModified('items');
+    await shoppingList.save();
     return shoppingList.items[itemIndex];
   }
 }
